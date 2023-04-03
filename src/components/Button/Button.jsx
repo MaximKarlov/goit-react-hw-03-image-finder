@@ -1,40 +1,35 @@
 import { React, Component } from 'react';
 import { Loader } from '../Loader/Loader';
-import Notiflix from 'notiflix';
 import btnCss from './Button.module.css';
 
+let nextPages = '';
+let isLoad = false;
+
 export class LoadMore extends Component {
-  state = {
-    isLoading: false,
-    pages: 0,
-  };
-
-  componentDidMount = () => {
-    const { pages } = this.props.options;
-    this.setState({ pages: pages });
-  };
-
-  componentDidUpdate = (_, prevState) => {
-    if (prevState.isLoading !== this.state.isLoading) {
-      this.props.onClick(this.state);
-      setTimeout(() => this.setState({ isLoading: false }), 1000);
+  componentDidUpdate = () => {
+    const { pages, isLoading } = this.props.options;
+    console.log(pages);
+    console.log(nextPages);
+    isLoad = isLoading;
+    if (nextPages === pages) {
+      return;
     }
   };
+  resetConstants = () => {
+    nextPages = '';
+    isLoad = false;
+  };
+  // };
 
   onLoadMore = () => {
-    try {
-      this.setState({ isLoading: true });
-      console.log(this.state);
-      let page = this.state.pages + 1;
-      this.setState({ pages: page, isLoading: true });
-    } catch (error) {
-      Notiflix.Notify.error(error);
-    }
+    nextPages = this.props.options.pages + 1;
+    isLoad = true;
+    this.props.onClick(isLoad, nextPages);
+    this.resetConstants();
   };
-
   render() {
-    const loading = this.state.isLoading;
-    return loading ? (
+    console.log('button isLoad>>>', isLoad);
+    return isLoad ? (
       <Loader />
     ) : (
       <button type="submit" className={btnCss.btn} onClick={this.onLoadMore}>
