@@ -9,10 +9,10 @@ export const serching = async (searchPhoto, PAGES) => {
     .get(`${ENDPOINT}?key=${KEY}&q=${searchPhoto}${FILTER}${PER_PAGE}&page=${PAGES}`)
     .then(data => {
       return data;
-    })
-    .then(data => {
-      return data;
     });
+  // .then(data => {
+  //   return data;
+  // });
   return response.data;
 };
 

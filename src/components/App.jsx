@@ -19,7 +19,7 @@ export class App extends Component {
   };
 
   api_searching = (search, pages) => {
-    const articlesArray = [];
+    // const articlesArray = [];
     const response = Api.serching(search, pages);
     response
       .then(({ hits, totalHits }) => {
@@ -27,17 +27,11 @@ export class App extends Component {
         return hits;
       })
       .then(data => {
-        data.map(el => {
-          let articles = {
-            id: el.id,
-            tag: el.tags,
-            largeImageURL: el.largeImageURL,
-            webformatURL: el.webformatURL,
-          };
-          return articlesArray.push(articles);
-        });
+        // console.log('data>>>>>>>', data);
+        return data;
       });
-    return articlesArray;
+    // console.log('response>>>>>>>', response.data);
+    return response;
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -45,21 +39,42 @@ export class App extends Component {
 
     if (newSearch === true) {
       this.setState({ searchImages: [], isLoading: true });
-      const articles = this.api_searching(search, pages);
-      return this.setState({ newSearch: false, searchImages: articles, isLoading: false });
+      if (prevState.search !== this.state.search) {
+        const articles = this.api_searching(search, pages);
+        articles.then(data => {
+          const { hits } = data;
+          // hits.map(article => console.log(article));
+          console.log(hits);
+          this.setState({ searchImages: hits });
+        });
+        this.setState({ newSearch: false, isLoading: false });
+      }
     }
     if (prevState.pages !== this.state.pages) {
       if (prevState.search === this.state.search) {
         if (isLoading === true) {
+          //       // const articles = [{ id: 1 }, { id: 2 }, { id: 3 }];
           const articles = this.api_searching(search, pages);
-          console.log('ARTICLES>>>>>>>>', articles);
-          articles.forEach(article => {
-            return console.log('ARTICLES returns', article);
+          articles.then(data => {
+            const { hits } = data;
+
+            hits.map(el => {
+              let articles = {
+                id: el.id,
+                tag: el.tags,
+                largeImageURL: el.largeImageURL,
+                webformatURL: el.webformatURL,
+              };
+              return this.setState(prevState => {
+                return {
+                  searchImages: [...prevState.searchImages, articles],
+                };
+              });
+            });
           });
-          // console.log('ARTICLES1234', ...articles);
-          return this.setState({ searchImages: [...this.state.searchImages, ...articles], isLoading: true });
         }
       }
+      this.setState({ isLoading: false });
     }
 
     // console.log('this.state>>>>>', this.state);
