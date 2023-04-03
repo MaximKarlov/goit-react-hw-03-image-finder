@@ -1,6 +1,6 @@
 import simpleLightBox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import API from '../src/components/Api/Api_query';
+import API from '../src/Api/Api_query';
 import Notiflix from 'notiflix';
 
 const formUrl = document.querySelector('#search-form');
