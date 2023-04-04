@@ -1,4 +1,5 @@
 import { React, Component } from 'react';
+import PropTypes from 'prop-types';
 import { Loader } from '../Loader/Loader';
 import btnCss from './Button.module.css';
 
@@ -8,8 +9,6 @@ let isLoad = false;
 export class LoadMore extends Component {
   componentDidUpdate = () => {
     const { pages, isLoading } = this.props.options;
-    console.log(pages);
-    console.log(nextPages);
     isLoad = isLoading;
     if (nextPages === pages) {
       return;
@@ -39,7 +38,6 @@ export class LoadMore extends Component {
   }
 }
 
-// onLoadMore = options => {
-//   this.setState({ loading: true });
-//   this.props.onClick(false);
-// };
+LoadMore.propTypes = {
+  onClick: PropTypes.func.isRequired,
+};

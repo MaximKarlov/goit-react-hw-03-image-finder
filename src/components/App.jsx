@@ -19,7 +19,6 @@ export class App extends Component {
   };
 
   api_searching = (search, pages) => {
-    // const articlesArray = [];
     const response = Api.serching(search, pages);
     response
       .then(({ hits, totalHits }) => {
@@ -27,14 +26,13 @@ export class App extends Component {
         return hits;
       })
       .then(data => {
-        // console.log('data>>>>>>>', data);
         return data;
       });
-    // console.log('response>>>>>>>', response.data);
+
     return response;
   };
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(_, prevState) {
     const { search, pages, newSearch, isLoading } = this.state;
 
     if (newSearch === true) {
@@ -43,9 +41,20 @@ export class App extends Component {
         const articles = this.api_searching(search, pages);
         articles.then(data => {
           const { hits } = data;
-          // hits.map(article => console.log(article));
-          console.log(hits);
-          this.setState({ searchImages: hits });
+          hits.map(el => {
+            let articles = {
+              id: el.id,
+              tag: el.tags,
+              largeImageURL: el.largeImageURL,
+              webformatURL: el.webformatURL,
+            };
+            console.log(articles);
+            return this.setState(prevState => {
+              return {
+                searchImages: [...prevState.searchImages, articles],
+              };
+            });
+          });
         });
         this.setState({ newSearch: false, isLoading: false });
       }
@@ -53,11 +62,9 @@ export class App extends Component {
     if (prevState.pages !== this.state.pages) {
       if (prevState.search === this.state.search) {
         if (isLoading === true) {
-          //       // const articles = [{ id: 1 }, { id: 2 }, { id: 3 }];
           const articles = this.api_searching(search, pages);
           articles.then(data => {
             const { hits } = data;
-
             hits.map(el => {
               let articles = {
                 id: el.id,
@@ -76,8 +83,6 @@ export class App extends Component {
       }
       this.setState({ isLoading: false });
     }
-
-    // console.log('this.state>>>>>', this.state);
   }
 
   onSubmitHandler = data => {
@@ -103,7 +108,6 @@ export class App extends Component {
 
   render() {
     const result = this.state.isLoading;
-    console.log('result of load>>>', result);
     const modal = this.state.modal;
     const isMoreImages = this.state.pages > 0 && this.state.pages * 12 < this.state.totalImages;
     return (
@@ -116,65 +120,3 @@ export class App extends Component {
     );
   }
 }
-
-// onSubmitHandler = data => {
-//   const { search, newSearch } = data;
-//   this.setState({ newSearch: newSearch });
-//   const articlesArray = [];
-//   if (newSearch === true) {
-//     this.setState({ search: search, pages: 1, searchImages: [], isLoading: true, newSearch: true });
-//   }
-//   try {
-//     const response = Api.serching(search, 1);
-//     response.then(({ hits, totalHits }) => {
-//       this.setState({ totalImages: totalHits });
-//       hits.map(el => {
-//         let articles = {
-//           id: el.id,
-//           tag: el.tags,
-//           largeImageURL: el.largeImageURL,
-//           webformatURL: el.webformatURL,
-//         };
-//         return articlesArray.push(articles);
-//       });
-
-//       return this.setState({ isLoading: false, newSearch: false, searchImages: articlesArray });
-//     });
-//   } catch (error) {
-//     Notiflix.Notify.error(error);
-//   }
-// };
-
-// componentDidUpdate(_, prevState) {
-//     const { search, pages, newSearch } = this.state;
-
-//     if (prevState.pages !== this.state.pages) {
-//       if (prevState.search === this.state.search) {
-//         if (newSearch === false) {
-//           try {
-//             const resp = Api.serching(search, pages);
-//             resp.then(({ hits }) => {
-//               hits.map(el => {
-//                 let articles = {
-//                   id: el.id,
-//                   tag: el.tags,
-//                   largeImageURL: el.largeImageURL,
-//                   webformatURL: el.webformatURL,
-//                 };
-//                 return this.setState(prevState => {
-//                   return {
-//                     searchImages: [...prevState.searchImages, articles],
-//                   };
-//                 });
-//               });
-//             });
-//           } catch (error) {
-//             Notiflix.Notify.error(error);
-//           } finally {
-//             this.setState({ isLoading: false });
-//           }
-//         }
-//       }
-//     }
-//     return;
-//   }

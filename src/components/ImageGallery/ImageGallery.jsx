@@ -11,7 +11,7 @@ export const ImageGallery = ({ options, onClick }) => (
             largeImage={largeImageURL}
             id={id}
             key={webformatURL}
-            tag={tag}
+            tags={tag}
             webFormat={webformatURL}
             onClick={onClick}
           />
