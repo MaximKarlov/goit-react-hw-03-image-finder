@@ -34,7 +34,6 @@ export class App extends Component {
 
   componentDidUpdate(_, prevState) {
     const { search, pages, newSearch, isLoading } = this.state;
-
     if (newSearch === true) {
       this.setState({ searchImages: [], isLoading: true });
       if (prevState.search !== this.state.search) {
@@ -85,8 +84,7 @@ export class App extends Component {
     }
   }
 
-  onSubmitHandler = data => {
-    const { newSearch, pages, search } = data;
+  onSubmitHandler = ({ newSearch, search, pages }) => {
     this.setState({ newSearch, pages, search, isLoading: true });
   };
   handleClick = largeImage => {
@@ -96,8 +94,11 @@ export class App extends Component {
     this.setState({ modal: null });
   };
 
-  onloadMoreImages = (load, page) => {
-    this.setState({ pages: page, isLoading: load });
+  onloadMoreImages = () => {
+    this.setState(prevState => {
+      return { pages: prevState.pages + 1, isLoading: true };
+      // this.setState({ pages: 1, isLoading: load });
+    });
   };
 
   sendMessage = () => {
@@ -110,11 +111,15 @@ export class App extends Component {
     const result = this.state.isLoading;
     const modal = this.state.modal;
     const isMoreImages = this.state.pages > 0 && this.state.pages * 12 < this.state.totalImages;
+    console.log('result of Loading>>>>>', result);
     return (
       <div>
         <Searchbar onSubmit={this.onSubmitHandler} />
-        {result ? <Loader /> : <ImageGallery options={this.state.searchImages} onClick={this.handleClick} />}
-        {isMoreImages ? <LoadMore options={this.state} onClick={this.onloadMoreImages} /> : this.sendMessage()}
+        {result && <Loader />}
+        <ImageGallery options={this.state.searchImages} onClick={this.handleClick} />
+
+        {result ? <Loader /> : isMoreImages ? <LoadMore onClick={this.onloadMoreImages} /> : this.sendMessage()}
+
         {modal ? <Modal options={modal} closeModal={this.closeModal} /> : ''}
       </div>
     );

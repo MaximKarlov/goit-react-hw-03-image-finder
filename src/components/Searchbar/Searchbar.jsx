@@ -5,8 +5,6 @@ import searchCss from '..//Searchbar/Searchbar.module.css';
 export class Searchbar extends Component {
   state = {
     search: '',
-    newSearch: false,
-    pages: 1,
   };
 
   handleValueChange = e => {
@@ -16,13 +14,11 @@ export class Searchbar extends Component {
 
   onSubmitHandler = e => {
     e.preventDefault();
-    this.setState({ newSearch: true });
-    setTimeout(() => {
-      if (this.state.newSearch === true) {
-        this.props.onSubmit(this.state);
-        this.setState({ search: '' });
-      } else alert('Something went wrong');
-    }, 1000);
+    const search = this.state.search;
+    const newSearch = true;
+    const pages = 1;
+    this.props.onSubmit({ newSearch, search, pages });
+    this.setState({ search: '' });
   };
 
   render() {

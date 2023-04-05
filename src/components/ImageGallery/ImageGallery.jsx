@@ -4,6 +4,7 @@ import ImageCss from './Image.module.css';
 
 export const ImageGallery = ({ options, onClick }) => (
   <>
+    {onClick.isLoading ? '123' : '78676'}
     {options.length > 0 && (
       <ul className={ImageCss.gallery}>
         {options.map(({ id, largeImageURL, tag, webformatURL }) => (

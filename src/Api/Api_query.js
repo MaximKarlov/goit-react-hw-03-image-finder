@@ -10,9 +10,6 @@ export const serching = async (searchPhoto, PAGES) => {
     .then(data => {
       return data;
     });
-  // .then(data => {
-  //   return data;
-  // });
   return response.data;
 };
 
