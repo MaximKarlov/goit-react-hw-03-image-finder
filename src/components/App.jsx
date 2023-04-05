@@ -110,7 +110,6 @@ export class App extends Component {
     const result = this.state.isLoading;
     const modal = this.state.modal;
     const isMoreImages = this.state.pages > 0 && this.state.pages * 12 < this.state.totalImages;
-    console.log('result of Loading>>>>>', result);
     return (
       <div>
         <Searchbar onSubmit={this.onSubmitHandler} />
