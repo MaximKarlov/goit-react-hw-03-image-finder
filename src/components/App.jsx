@@ -47,7 +47,6 @@ export class App extends Component {
               largeImageURL: el.largeImageURL,
               webformatURL: el.webformatURL,
             };
-            console.log(articles);
             return this.setState(prevState => {
               return {
                 searchImages: [...prevState.searchImages, articles],
@@ -56,6 +55,7 @@ export class App extends Component {
           });
         });
         this.setState({ newSearch: false, isLoading: false });
+        // this.setState({ newSearch: false });
       }
     }
     if (prevState.pages !== this.state.pages) {
@@ -97,7 +97,6 @@ export class App extends Component {
   onloadMoreImages = () => {
     this.setState(prevState => {
       return { pages: prevState.pages + 1, isLoading: true };
-      // this.setState({ pages: 1, isLoading: load });
     });
   };
 
@@ -117,8 +116,7 @@ export class App extends Component {
         <Searchbar onSubmit={this.onSubmitHandler} />
         {result && <Loader />}
         <ImageGallery options={this.state.searchImages} onClick={this.handleClick} />
-
-        {result ? <Loader /> : isMoreImages ? <LoadMore onClick={this.onloadMoreImages} /> : this.sendMessage()}
+        {isMoreImages ? result ? <Loader /> : <LoadMore onClick={this.onloadMoreImages} /> : this.sendMessage()}
 
         {modal ? <Modal options={modal} closeModal={this.closeModal} /> : ''}
       </div>
