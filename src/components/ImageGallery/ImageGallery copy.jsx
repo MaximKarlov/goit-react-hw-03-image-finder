@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
-import { Loader } from '../Loader/Loader';
-import { LoadMore } from '../Button/Button';
 import { ImageGalleryItem } from '../ImageGallery/ImageGalleryItem';
+import { Loader } from '../Loader/Loader';
 import Notiflix from 'notiflix';
+import { LoadMore } from '../Button/Button';
 import ImageCss from './Image.module.css';
 
-export const ImageGallery = ({ images, onClick, status, isMoreImages, loadMoreImages, totalHits, currentImages }) => (
+export const ImageGallery = ({ options, load, onClick, loadMore }) => (
   <>
-    {images.length > 0 && (
+    {options.length > 0 && (
       <ul className={ImageCss.gallery}>
-        {images.map(({ id, largeImageURL, tag, webformatURL }) => (
+        {options.map(({ id, largeImageURL, tag, webformatURL }) => (
           <ImageGalleryItem
             largeImage={largeImageURL}
             id={id}
@@ -21,20 +21,13 @@ export const ImageGallery = ({ images, onClick, status, isMoreImages, loadMoreIm
         ))}
       </ul>
     )}
-    {status === 'loading' ? (
-      <Loader />
-    ) : isMoreImages > 0 ? (
-      <LoadMore onClick={loadMoreImages} />
-    ) : currentImages <= totalHits ? (
-      ''
-    ) : (
-      Notiflix.Notify.warning('Це остання сторінка')
-    )}
+    {load ? <Loader /> : <LoadMore onClick={loadMore} />}
+    {/* {options.length <= 500 && Notiflix.Notify.warning('Це остання сторінка')} */}
   </>
 );
 
 ImageGallery.propTypes = {
-  images: PropTypes.arrayOf(
+  options: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,
       largeImageURL: PropTypes.string.isRequired,

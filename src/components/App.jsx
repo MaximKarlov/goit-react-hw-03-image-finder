@@ -1,91 +1,73 @@
 import { React, Component } from 'react';
 import { Loader } from './Loader/Loader';
-import Notiflix from 'notiflix';
+
 import Api from '../Api/Api_query';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Modal } from './Modal/Modal';
-import { LoadMore } from './Button/Button';
+
+const STATUS = {
+  pending: 'pending',
+  loading: 'loading',
+};
 
 export class App extends Component {
   state = {
     pages: 0,
     searchImages: [],
     search: '',
-    isLoading: false,
+    isLoading: STATUS.pending,
     newSearch: false,
     totalImages: 0,
     modal: null,
   };
 
   api_searching = (search, pages) => {
-    const response = Api.serching(search, pages);
-    response
+    Api.serching(search, pages)
+      .then(response => {
+        return response.data;
+      })
       .then(({ hits, totalHits }) => {
         this.setState({ totalImages: totalHits });
+        hits.map(el => {
+          let articles = {
+            id: el.id,
+            tag: el.tags,
+            largeImageURL: el.largeImageURL,
+            webformatURL: el.webformatURL,
+          };
+          return this.setState(prevState => {
+            return {
+              searchImages: [...prevState.searchImages, articles],
+            };
+          });
+        });
         return hits;
       })
-      .then(data => {
-        return data;
+      .catch(error => {
+        alert(error.message);
+      })
+      .finally(() => {
+        this.setState({ isLoading: STATUS.pending });
       });
-
-    return response;
   };
 
   componentDidUpdate(_, prevState) {
-    const { search, pages, newSearch, isLoading } = this.state;
-    if (newSearch === true) {
-      this.setState({ searchImages: [], isLoading: true });
-      if (prevState.search !== this.state.search) {
-        const articles = this.api_searching(search, pages);
-        articles.then(data => {
-          const { hits } = data;
-          hits.map(el => {
-            let articles = {
-              id: el.id,
-              tag: el.tags,
-              largeImageURL: el.largeImageURL,
-              webformatURL: el.webformatURL,
-            };
-            return this.setState(prevState => {
-              return {
-                searchImages: [...prevState.searchImages, articles],
-              };
-            });
-          });
-        });
-        this.setState({ newSearch: false, isLoading: false });
-        // this.setState({ newSearch: false });
-      }
+    const { search, pages } = this.state;
+    if (prevState.search !== this.state.search) {
+      this.setState({ searchImages: [] });
     }
-    if (prevState.pages !== this.state.pages) {
-      if (prevState.search === this.state.search) {
-        if (isLoading === true) {
-          const articles = this.api_searching(search, pages);
-          articles.then(data => {
-            const { hits } = data;
-            hits.map(el => {
-              let articles = {
-                id: el.id,
-                tag: el.tags,
-                largeImageURL: el.largeImageURL,
-                webformatURL: el.webformatURL,
-              };
-              return this.setState(prevState => {
-                return {
-                  searchImages: [...prevState.searchImages, articles],
-                };
-              });
-            });
-          });
-        }
+    if (prevState.pages !== this.state.pages && prevState !== this.state) {
+      try {
+        this.api_searching(search, pages);
+      } catch (error) {
+        console.error('ERROR....', error);
       }
-      this.setState({ isLoading: false });
     }
   }
 
   onSubmitHandler = ({ newSearch, search, pages }) => {
-    this.setState({ newSearch, pages, search, isLoading: true });
+    this.setState({ newSearch, pages, search, isLoading: STATUS.loading });
   };
   handleClick = largeImage => {
     this.setState({ modal: largeImage });
@@ -96,27 +78,36 @@ export class App extends Component {
 
   onloadMoreImages = () => {
     this.setState(prevState => {
-      return { pages: prevState.pages + 1, isLoading: true };
+      return { pages: prevState.pages + 1, isLoading: STATUS.loading };
     });
   };
 
   sendMessage = () => {
     if (this.state.totalImages === 0) return;
     else if (this.state.searchImages.length < this.state.totalImages) return;
-    return Notiflix.Notify.warning('Це остання сторінка');
+    return;
   };
 
   render() {
     const result = this.state.isLoading;
     const modal = this.state.modal;
+    const currentImages = this.state.pages * 12;
     const isMoreImages = this.state.pages > 0 && this.state.pages * 12 < this.state.totalImages;
+    console.log(currentImages);
+
     return (
       <div>
         <Searchbar onSubmit={this.onSubmitHandler} />
-        {result && <Loader />}
-        <ImageGallery options={this.state.searchImages} onClick={this.handleClick} />
-        {isMoreImages ? result ? <Loader /> : <LoadMore onClick={this.onloadMoreImages} /> : this.sendMessage()}
-
+        {result === STATUS.loading && <Loader />}
+        <ImageGallery
+          images={this.state.searchImages}
+          status={this.state.isLoading}
+          totalHits={this.state.totalImages}
+          currentImages={currentImages}
+          isMoreImages={isMoreImages}
+          onClick={this.handleClick}
+          loadMoreImages={this.onloadMoreImages}
+        />
         {modal ? <Modal options={modal} closeModal={this.closeModal} /> : ''}
       </div>
     );
