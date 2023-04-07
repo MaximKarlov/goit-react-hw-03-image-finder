@@ -45,7 +45,7 @@ export class App extends Component {
         return hits;
       })
       .catch(error => {
-        alert(error.message);
+        console.log(error.message);
       })
       .finally(() => {
         this.setState({ isLoading: STATUS.pending });
@@ -53,11 +53,12 @@ export class App extends Component {
   };
 
   componentDidUpdate(_, prevState) {
-    const { search, pages } = this.state;
-    if (prevState.search !== this.state.search) {
+    const { search, pages, newSearch } = this.state;
+    if (newSearch === true && prevState.search !== this.state.search) {
       this.setState({ searchImages: [] });
+      this.api_searching(search, 1);
     }
-    if (prevState.pages !== this.state.pages && prevState !== this.state) {
+    if (prevState.search === this.state.search && prevState.pages !== this.state.pages && prevState !== this.state) {
       try {
         this.api_searching(search, pages);
       } catch (error) {
