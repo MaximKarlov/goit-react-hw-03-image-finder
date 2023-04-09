@@ -1,6 +1,4 @@
 import { React, Component } from 'react';
-import { Loader } from './Loader/Loader';
-
 import Api from '../Api/Api_query';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
@@ -90,16 +88,12 @@ export class App extends Component {
   };
 
   render() {
-    const result = this.state.isLoading;
     const modal = this.state.modal;
     const currentImages = this.state.pages * 12;
     const isMoreImages = this.state.pages > 0 && this.state.pages * 12 < this.state.totalImages;
-    console.log(currentImages);
-
     return (
       <div>
         <Searchbar onSubmit={this.onSubmitHandler} />
-        {result === STATUS.loading && <Loader />}
         <ImageGallery
           images={this.state.searchImages}
           status={this.state.isLoading}
